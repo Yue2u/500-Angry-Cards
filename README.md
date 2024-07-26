@@ -21,3 +21,6 @@ This is first alpha 0.0.1 version of game (I'm 99% sure it doesnt work normally)
 2. "put_answer" - send answer to question
 3. "set_round_winner" - set winner of round by answers
 4. "start_game" - trigger server "start_game" event
+
+# Stack
+Docker compose, Fastapi, postgresql (through sqlmodel orm), websockets, NATS
