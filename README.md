@@ -1,20 +1,23 @@
-# How to play
+# 500 Angry cards
+This is first alpha 0.0.1 version of game (I'm 99% sure it doesnt work normally). There still a lot of things to do about game host function.
+
+## How to play
 
 1. Create user and return his id
 2. Create room with this user and generate joining code/by id
 3. Wait for users to connect through websocket
-4. Choose card stack and start game with HTTP request and choose fir
+4. Choose card stack and start game
 5. Handle events through websocket
 
-# Websocket events
-server events:
-1. New round (change questioner and give him a card) "next_round"
-2. Get new card "get_new_card"
-3. Give list of answers "get_answers"
-4. Give card to round winner?
-5. Notify about end of the game and send a winner "end_game" returning value
+## Websocket events
+### Server events:
+1. "get_answers" - send answers to questioner
+2. "next_round" - start next round (choose new questioner and give everyone a card)
+3. "start_game" - notify everyine that game started (and give 10 cards to everyone)
+4. "get_new_cards" - give users new answer cards
 
-User events (they trigger server events):
-1. Choose winner card "set_round_winner"
-2. Send card to questioner "put_answer"
-3. End the game "end_game"
+### User events (they trigger server events):
+1. "end_game" - end game (notify everyone about winner)
+2. "put_answer" - send answer to question
+3. "set_round_winner" - set winner of round by answers
+4. "start_game" - trigger server "start_game" event
