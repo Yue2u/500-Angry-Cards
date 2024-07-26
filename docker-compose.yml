@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgres:15-alpine
+    expose:
+      - 5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+
+  # redis:
+  #   image: redis:7
+  #   command: redis-server
+  #   expose:
+  #     - 6379
+
+  nats:
+    image: nats:latest
+    command: "-DV --port 4222"
+    expose:
+      - 4222
+
+  backend:
+    restart: always
+    container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.application:fastapi_app --host "0.0.0.0" --port 8000 --proxy-headers"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - nats
+      - db
+    env_file:
+      - .env.docker
+    volumes:
+      - ./:/app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.backend.service=backend"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+      - "traefik.http.routers.backend-websocket.rule=Host(`backend.localhost`) && PathPrefix(`/ws`)"
+      - "traefik.http.routers.backend-websocket.entrypoints=websocket"
+      - "traefik.http.routers.backend-websocket.service=backend"
+      - "traefik.http.services.backend-websocket.loadbalancer.server.port=8000"
+      # - "traefik.http.routers.backend.tls=true"
+      # - "traefik.http.routers.backend.tls.certresolver=le"
+
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websocket.address=:8080"
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "8081:8081" # Traefik Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.yml:/etc/traefik/traefik.yaml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.entrypoints=web"
+
+
+volumes:
+  db_data:

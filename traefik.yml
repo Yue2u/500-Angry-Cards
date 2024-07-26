@@ -1,0 +1,25 @@
+# traefik.yaml
+
+api:
+  dashboard: true
+
+entryPoints:
+  web:
+    address: ":80"
+  websocket:
+    address: ":8080"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+log:
+  level: INFO
+
+# certificatesResolvers:
+#   le:
+#     acme:
+#       email: beloleg225@mail.ru
+#       storage: /le/acme.json
+#       httpChallenge:
+#         entryPoint: web

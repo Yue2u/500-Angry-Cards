@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "angry-cards"
+version = "0.1.0"
+description = ""
+authors = ["Yue2u <beloleg225@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.111.0"
+sqlmodel = "^0.0.19"
+asyncpg = "^0.29.0"
+pydantic = "^2.8.2"
+alembic = "^1.13.2"
+uvicorn = "^0.30.1"
+pydantic-settings = "^2.3.4"
+websockets = "^12.0"
+nats-py = "^2.8.0"
+black = "^24.4.2"
+isort = "^5.13.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
