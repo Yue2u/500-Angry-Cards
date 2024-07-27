@@ -51,11 +51,20 @@ async def get_card_by_id_api(
 
 @router.post("/cards", response_model=ReadCard)
 async def create_card_api(
-    db: Annotated[Session, Depends(get_session)], card: CreateCard
+    db: Annotated[Session, Depends(get_session)],
+    card: CreateCard,
+    cardbox_id: int | None = None,
 ):
     new_card = await create_card(db, card)
     if not new_card:
         raise HTTPException(status_code=400, detail="Wrong card format")
+
+    if cardbox_id is not None:
+        cb = await add_card_to_cardbox(db, new_card.id, cardbox_id)
+        if not cb:
+            raise HTTPException(
+                status_code=404, detail="Card created but cardbox not found"
+            )
 
     return new_card
 
@@ -95,9 +104,9 @@ async def get_cardbox_by_id_api(
 
 @router.post("/cardboxes", response_model=ReadCardBox)
 async def create_cardbox_api(
-    db: Annotated[Session, Depends(get_session)], card: CreateCardBox
+    db: Annotated[Session, Depends(get_session)], cardbox: CreateCardBox
 ):
-    new_cb = await create_cardbox(db, card)
+    new_cb = await create_cardbox(db, cardbox)
     if not new_cb:
         raise HTTPException(status_code=400, detail="Wrong cardbox format")
 

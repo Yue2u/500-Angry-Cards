@@ -10,7 +10,7 @@ class BaseRoomUser(SQLModel):
     points: int = Field(default=0)
 
     user_id: int = Field(foreign_key="user.id")
-    room_id: int = Field(foreign_key="room.id")
+    room_id: int | None = Field(default=None, foreign_key="room.id", ondelete="CASCADE")
 
 
 class RoomUser(BaseRoomUser, table=True):

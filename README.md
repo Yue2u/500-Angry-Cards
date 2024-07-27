@@ -15,6 +15,8 @@ This is first alpha 0.0.1 version of game (I'm 99% sure it doesnt work normally)
 2. "next_round" - start next round (choose new questioner and give everyone a card)
 3. "start_game" - notify everyine that game started (and give 10 cards to everyone)
 4. "get_new_cards" - give users new answer cards
+5. "put_answer" - notify everyone that player put answer
+6. "User joined" - notify that player joined
 
 ### User events (they trigger server events):
 1. "end_game" - end game (notify everyone about winner)

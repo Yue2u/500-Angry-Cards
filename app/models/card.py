@@ -18,7 +18,7 @@ class CardCardBoxLinkTable(SQLModel, table=True):
 class CardRoomUserLinkTable(SQLModel, table=True):
     card_id: int | None = Field(default=None, foreign_key="card.id", primary_key=True)
     room_user_id: int | None = Field(
-        default=None, foreign_key="roomuser.id", primary_key=True
+        default=None, foreign_key="roomuser.id", primary_key=True, ondelete="CASCADE"
     )
 
 

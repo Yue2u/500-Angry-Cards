@@ -23,12 +23,13 @@ class EventsHandler:
         self.last_answer_card_id = 0
         self.last_question_card_id = 0
 
-        self.server_events = {
-            "get_answers": self.get_answers,
-            "next_round": self.next_round,
-            "start_game": self.start_game,
-            "get_new_cards": self.get_new_cards,
-        }
+        self.server_events = [
+            "get_answers",
+            "next_round",
+            "start_game",
+            "get_new_cards",
+            "put_answer",
+        ]
         self.user_events = ["end_game", "put_answer", "set_round_winner", "start_game"]
         self.user_event_handler = {
             "end_game": self.handle_end_game,
@@ -46,6 +47,11 @@ class EventsHandler:
         await handler(event)
 
     async def handle_set_round_winner(self, event: dict):
+        sender = await self.get_player_info(event["from"])
+        if self.room.players.index(sender) != self.current_questioner_idx:
+            print("Player", sender, "tryed to set round winner not being questioner")
+            return
+
         data = event["data"]
         winner_id = data["winner_id"]
 
@@ -90,6 +96,11 @@ class EventsHandler:
         )
 
     async def handle_put_answer(self, event: dict):
+        questioner = await self.get_current_questioner()
+        if event["from"] == questioner.id:
+            print("Questioner", questioner, "tried to send an answer")
+            return
+
         data = event["data"]
         player_id = data["player_id"]
         card = Card(**data["card"])
@@ -108,8 +119,7 @@ class EventsHandler:
             {
                 "name": "put_answer",
                 "to": "any",
-                "data": {"card": data["card"]},
-                "status": "successful",
+                "data": {"player": await self.get_player_info(player_id).model_dump()},
                 "from": "server",
             }
         )
@@ -132,20 +142,6 @@ class EventsHandler:
             {"name": "start_game", "data": {}, "to": "any", "from": "server"}
         )
 
-        await self.publish(
-            {
-                "name": "next_round",
-                "data": {
-                    "questioner": self.room.players[
-                        self.current_questioner_idx
-                    ].model_dump(),
-                    "question_card": (self.__choose_question_cards().model_dump()),
-                },
-                "to": "any",
-                "from": "server",
-            }
-        )
-
         async def take_card_and_publish(player_id: int):
             cards = await self.get_new_cards(player_id, n=10)
             await self.publish(
@@ -159,6 +155,20 @@ class EventsHandler:
 
         await asyncio.gather(
             *[take_card_and_publish(player.id) for player in self.room.players]
+        )
+
+        await self.publish(
+            {
+                "name": "next_round",
+                "data": {
+                    "questioner": self.room.players[
+                        self.current_questioner_idx
+                    ].model_dump(),
+                    "question_card": self.__choose_question_cards().model_dump(),
+                },
+                "to": "any",
+                "from": "server",
+            }
         )
 
     async def get_answers(self):

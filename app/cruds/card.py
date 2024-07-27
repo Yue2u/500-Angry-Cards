@@ -63,6 +63,9 @@ async def add_card_to_cardbox(db: Session, card_id: int, cb_id: int):
         get_card_by_id(db, card_id), get_cardbox_by_id(db, cb_id)
     )
 
+    if not card or not cb:
+        return None
+
     cb.cards.append(card)
     db.add(cb)
     await db.commit()
