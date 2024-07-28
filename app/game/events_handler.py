@@ -125,7 +125,7 @@ class EventsHandler:
         )
 
     async def handle_end_game(self, event: dict):
-        winner = max(self.room.players, lambda p: p.points)
+        winner = max(self.room.players, key=lambda p: p.points)
         await self.end_game()
         await self.publish(
             {
