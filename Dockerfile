@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y build-essential
 RUN pip wheel --wheel-dir /usr/src/app/wheels  \
   -r requirements/prod.txt
 
+EXPOSE 8000
+
 # Python 'run' stage
 FROM python as python-run-stage
 
