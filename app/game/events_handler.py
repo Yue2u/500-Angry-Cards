@@ -106,7 +106,7 @@ class EventsHandler:
         card = Card(**data["card"])
 
         await self.put_answer(player_id, card)
-        if len(self.answers) == len(self.room.players):
+        if len(self.answers) + 1 == len(self.room.players):
             await self.publish(
                 {
                     "name": "get_answers",

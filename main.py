@@ -13,14 +13,14 @@ async def main():
 
     resp = httpx.post(f"https://{BASE_URL}/api/room/create_room?cardbox_id=1")
     d = resp.json()
-    print("d")
+    print(d)
     code = d["code"]
 
     # code = "JUFXIX"
     async with websockets.connect(
         f"wss://{BASE_URL}/ws/connect_nats?nickname=Oleg&room_code={code}"
     ) as ws:
-        data = {"name": "end_game", "from": my_id, "data": {}, "to": "any"}
+        data = {"name": "start_game", "from": my_id, "data": {}, "to": "any"}
         await ws.send(json.dumps(data))
         async for msg in ws:
             event = json.loads(msg)
