@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.room_user import RoomUser
@@ -40,6 +40,7 @@ async def get_or_create_room_user(db: Session, user_id: int, room_code: int):
     return user
 
 
-async def delete_room_users(db: Session, room_user: list[RoomUser]):
-    await db.delete(room_user)
+async def delete_room_users(db: Session, room_id: int):
+    stmt = delete(RoomUser).where(RoomUser.room_id == room_id)
+    await db.execute(stmt)
     await db.commit()

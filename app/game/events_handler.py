@@ -199,8 +199,7 @@ class EventsHandler:
         await self.db.refresh(self.room)
         self.room.end_game()
         self.db.add(self.room)
-        await delete_room_users(self.db, self.room.players)
-        await self.db.delete(self.room)
+        await delete_room_users(self.db, self.room.id)
         await self.db.commit()
         await self.db.refresh(self.room)
         return self.room

@@ -11,12 +11,12 @@ async def main():
     cards = []
     my_id = 1
 
-    # resp = httpx.post(f"https://{BASE_URL}/api/room/create_room?cardbox_id=1")
-    # d = resp.json()
-    # print('d')
-    # code = d['code']
+    resp = httpx.post(f"https://{BASE_URL}/api/room/create_room?cardbox_id=1")
+    d = resp.json()
+    print("d")
+    code = d["code"]
 
-    code = "JUFXIX"
+    # code = "JUFXIX"
     async with websockets.connect(
         f"wss://{BASE_URL}/ws/connect_nats?nickname=Oleg&room_code={code}"
     ) as ws:
