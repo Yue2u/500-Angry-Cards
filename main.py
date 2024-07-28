@@ -4,12 +4,21 @@ import asyncio
 import httpx
 
 
+BASE_URL = "500-angry-production.up.railway.app"
+
+
 async def main():
     cards = []
-    my_id = 2
+    my_id = 1
 
+    resp = httpx.post(f"https://{BASE_URL}/api/room/create_room?cardbox_id=1")
+    d = resp.json()
+    print(d)
+    code = d["code"]
+
+    # code = "JUFXIX"
     async with websockets.connect(
-        "ws://backend.localhost/ws/connect_nats?nickname=Oleg&room_code=QNBGEQ"
+        f"wss://{BASE_URL}/ws/connect_nats?nickname=Oleg&room_code={code}"
     ) as ws:
         data = {"name": "start_game", "from": my_id, "data": {}, "to": "any"}
         await ws.send(json.dumps(data))
@@ -54,13 +63,13 @@ async def main():
 
 asyncio.run(main())
 # for i in range(50):
-#     resp = httpx.post("http://backend.localhost/api/cards?cardbox_id=1", json={"type": 1, "content": f"Answer {i}"})
+#     resp = httpx.post(f"https://{BASE_URL}/api/cards?cardbox_id=1", json={"type": 1, "content": f"Answer {i}"})
 #     print(resp.json() if resp.status_code == 200 else resp)
 #     data = resp.json()
 #     # httpx.post(f"http://backend.localhost/api/cardboxes/1/add_card_to_cardbox/{data.get('id')}")
 
 # for i in range(50):
-#     resp = httpx.post("http://backend.localhost/api/cards?cardbox_id=1", json={"type": 0, "content": f"Question {i}"})
+#     resp = httpx.post(f"https://{BASE_URL}/api/cards?cardbox_id=1", json={"type": 0, "content": f"Question {i}"})
 #     print(resp.json() if resp.status_code == 200 else resp)
 #     data = resp.json()
 #     # httpx.post(f"http://backend.localhost/api/cardboxes/1/add_card_to_cardbox/{data.get('id')}")

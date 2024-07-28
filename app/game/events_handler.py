@@ -106,7 +106,7 @@ class EventsHandler:
         card = Card(**data["card"])
 
         await self.put_answer(player_id, card)
-        if len(self.answers) == len(self.room.players):
+        if len(self.answers) + 1 == len(self.room.players):
             await self.publish(
                 {
                     "name": "get_answers",
@@ -125,7 +125,7 @@ class EventsHandler:
         )
 
     async def handle_end_game(self, event: dict):
-        winner = max(self.room.players, lambda p: p.points)
+        winner = max(self.room.players, key=lambda p: p.points)
         await self.end_game()
         await self.publish(
             {
@@ -199,8 +199,7 @@ class EventsHandler:
         await self.db.refresh(self.room)
         self.room.end_game()
         self.db.add(self.room)
-        await delete_room_users(self.db, self.room.players)
-        await self.db.delete(self.room)
+        await delete_room_users(self.db, self.room.id)
         await self.db.commit()
         await self.db.refresh(self.room)
         return self.room

@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y build-essential
 RUN pip wheel --wheel-dir /usr/src/app/wheels  \
   -r requirements/prod.txt
 
+
 # Python 'run' stage
 FROM python as python-run-stage
 
@@ -27,6 +28,7 @@ ARG APP_HOME=/app
 
 WORKDIR ${APP_HOME}
 
+COPY . /app
 
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends --fix-missing -y \
