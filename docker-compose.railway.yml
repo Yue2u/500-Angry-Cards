@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+
+  nats:
+    image: nats:latest
+    command: "-DV --port 4222"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.application:fastapi_app --host 0.0.0.0 --port 8000 --proxy-headers"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - nats
+      - db
+    env_file:
+      - .env.docker
+    volumes:
+      - ./:/app
+
+volumes:
+  db_data:
