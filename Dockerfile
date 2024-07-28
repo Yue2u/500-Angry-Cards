@@ -43,4 +43,4 @@ RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
   && rm -rf /wheels/
 
 
-CMD uvicorn app.application:fastapi_app --host "127.0.0.1" --port 5000 --reload
+CMD alembic upgrade head && uvicorn app.application:fastapi_app --host "0.0.0.0" --port 8000 --proxy-headers"
