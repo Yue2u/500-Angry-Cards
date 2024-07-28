@@ -27,6 +27,7 @@ ARG APP_HOME=/app
 
 WORKDIR ${APP_HOME}
 
+COPY . /app
 
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends --fix-missing -y \
